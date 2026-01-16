@@ -156,3 +156,11 @@ Thumbs.db
 
 # profiling data
 .prof
+
+# custom directories
+infos/
+test/
+
+# custom files
+up.bat
+
