@@ -165,5 +165,8 @@ test/
 generate_password.ps1
 start-complete.bat
 start-with-env-file.bat
+clean.bat
+deploy.bat
+VM_DEPLOYMENT.md
 up.bat
 
