@@ -167,6 +167,7 @@ start-complete.bat
 start-with-env-file.bat
 clean.bat
 deploy.bat
+deploy-simple.bat
 VM_DEPLOYMENT.md
 up.bat
 
