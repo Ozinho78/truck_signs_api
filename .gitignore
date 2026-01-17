@@ -162,5 +162,8 @@ infos/
 test/
 
 # custom files
+generate_password.ps1
+start-complete.bat
+start-with-env-file.bat
 up.bat
 
