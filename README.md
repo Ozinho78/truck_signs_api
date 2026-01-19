@@ -266,7 +266,7 @@ sleep 5
 docker run -d \
     --name truck-signs-api \
     --network truck-signs-network \
-    -p 8000:8000 \
+    -p 8020:8000 \
     --env-file .env \
     truck-signs-api:latest
 ```
@@ -290,7 +290,7 @@ docker build -t truck-signs-api:latest .
 docker run -d \
     --name truck-signs-api \
     --network truck-signs-network \
-    -p 8000:8000 \
+    -p 8020:8000 \
     --env-file .env \
     truck-signs-api:latest
 ```
@@ -301,10 +301,10 @@ Once containers are running, access the application at:
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| API Root | `http://localhost:8000` | Main API endpoint |
-| Admin Panel | `http://localhost:8000/admin` | Django administration |
-| API Docs | `http://localhost:8000/api/` | API documentation |
-| Swagger UI | `http://localhost:8000/swagger/` | Interactive API docs (if enabled) |
+| API Root | `http://localhost:8020` | Main API endpoint |
+| Admin Panel | `http://localhost:8020/admin` | Django administration |
+| API Docs | `http://localhost:8020/api/` | API documentation |
+| Swagger UI | `http://localhost:8020/swagger/` | Interactive API docs (if enabled) |
 
 **Create superuser for admin access:**
 ```bash
@@ -485,13 +485,13 @@ docker exec -it truck-signs-api psql -h truck-signs-db -U truck_signs_user -d tr
 
 ### Port already in use
 
-**Check what's using port 8000:**
+**Check what's using port 8020:**
 ```bash
 # Windows
-netstat -ano | findstr :8000
+netstat -ano | findstr :8020
 
 # Linux/macOS
-lsof -i :8000
+lsof -i :8020
 ```
 
 **Use different port:**
@@ -582,12 +582,6 @@ docker rmi truck-signs-api:latest
 
 ## Project Information
 
-- **Technology Stack**: Django 2.2.8, PostgreSQL 15, Gunicorn, WhiteNoise
-- **Container Runtime**: Docker 20.10+
-- **Database**: PostgreSQL 15 Alpine
-- **WSGI Server**: Gunicorn
-- **Payment Integration**: Stripe API
-- **Email Provider**: Gmail SMTP
-- **Last Updated**: January 2026
-- **Branch**: feature/api-containerization
 - **Course**: DevSecOps
+- **Branch**: feature/api-containerization
+- **Last Updated**: January 2026
