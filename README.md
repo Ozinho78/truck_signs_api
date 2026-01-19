@@ -38,17 +38,17 @@ docker ps
 
 ### 1. Clone the repository
 ```bash
-git clone -b feature/api-containerization git@github.com:YOUR_USERNAME/truck_signs_api.git
+git clone -b feature/api-containerization git@github.com:Ozinho78/truck_signs_api.git
 cd truck_signs_api
 ```
 
 ### 2. Create environment file
 ```bash
 # Windows
-copy .env.example .env
+copy env.template .env
 
 # Linux/macOS
-cp .env.example .env
+cp env.template .env
 ```
 
 ### 3. Configure environment variables
@@ -124,7 +124,7 @@ sleep 5
 docker run -d \
     --name truck-signs-api \
     --network truck-signs-network \
-    -p 8000:8000 \
+    -p 8020:8000 \
     --env-file .env \
     truck-signs-api:latest
 ```
@@ -137,14 +137,14 @@ docker ps --filter "name=truck-signs"
 Expected output:
 ```
 CONTAINER ID   IMAGE                    STATUS         PORTS                    NAMES
-abc123def456   truck-signs-api:latest   Up 10 seconds  0.0.0.0:8000->8000/tcp  truck-signs-api
+abc123def456   truck-signs-api:latest   Up 10 seconds  0.0.0.0:8020->8000/tcp  truck-signs-api
 def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                 truck-signs-db
 ```
 
 ### 9. Access application
-- **API**: `http://localhost:8000`
-- **Admin Panel**: `http://localhost:8000/admin`
-- **API Documentation**: `http://localhost:8000/api/`
+- **API**: `http://localhost:8020`
+- **Admin Panel**: `http://localhost:8020/admin`
+- **API Documentation**: `http://localhost:8020/api/`
 
 ---
 
