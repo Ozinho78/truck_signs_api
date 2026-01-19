@@ -138,7 +138,7 @@ Expected output:
 ```
 CONTAINER ID   IMAGE                    STATUS         PORTS                    NAMES
 abc123def456   truck-signs-api:latest   Up 10 seconds  0.0.0.0:8020->8000/tcp  truck-signs-api
-def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                 truck-signs-db
+def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                truck-signs-db
 ```
 
 ### 9. Access application
@@ -169,11 +169,11 @@ nano .env
 
 #### 1. Database Configuration (REQUIRED)
 ```bash
-POSTGRES_HOST=truck-signs-db          # Container name
-POSTGRES_PORT=5432                     # Default PostgreSQL port
-POSTGRES_DB=truck_signs_db            # Database name
-POSTGRES_USER=truck_signs_user        # Database user
-POSTGRES_PASSWORD=use_strong_password # CHANGE THIS!
+POSTGRES_HOST=truck-signs-db            # Container name
+POSTGRES_PORT=5432                      # Default PostgreSQL port
+POSTGRES_DB=truck_signs_db              # Database name
+POSTGRES_USER=truck_signs_user          # Database user
+POSTGRES_PASSWORD=use_strong_password   # CHANGE THIS!
 ```
 
 > [!WARNING]
@@ -191,9 +191,9 @@ DOCKER_SECRET_KEY=your_generated_secret_key_here
 
 #### 3. Django Settings (REQUIRED for production)
 ```bash
-DJANGO_ENV=production                           # or 'development'
-DEBUG=False                                     # NEVER True in production!
-ALLOWED_HOSTS=localhost,127.0.0.1,YOUR_SERVER_IP
+DJANGO_ENV=production                              # or 'development'
+DEBUG=False                                        # NEVER True in production!
+ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP>
 ```
 
 #### 4. Stripe Integration (REQUIRED)
@@ -209,7 +209,7 @@ DOCKER_STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
 #### 5. Email Configuration (REQUIRED)
 For Gmail, create an [App Password](https://myaccount.google.com/apppasswords):
 ```bash
-DOCKER_EMAIL_HOST_USER=your-email@gmail.com
+DOCKER_EMAIL_HOST_USER=<your-email>@gmail.com
 DOCKER_EMAIL_HOST_PASSWORD=your_16_char_app_password
 ```
 
