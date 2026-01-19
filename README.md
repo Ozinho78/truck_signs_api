@@ -1,158 +1,593 @@
-<div align="center">
+# Truck Signs API - Deployment
 
-![Truck Signs](./screenshots/Truck_Signs_logo.png)
+This repository contains the **containerized deployment** for the Truck Signs API, a Django-based REST API for truck signage management. The setup uses Docker to orchestrate a production-ready environment with PostgreSQL database, Stripe payment integration, and email functionality.
 
-# Signs for Trucks
-
-![Python version](https://img.shields.io/badge/Pythn-3.8.10-4c566a?logo=python&&longCache=true&logoColor=white&colorB=pink&style=flat-square&colorA=4c566a) ![Django version](https://img.shields.io/badge/Django-2.2.8-4c566a?logo=django&&longCache=truelogoColor=white&colorB=pink&style=flat-square&colorA=4c566a) ![Django-RestFramework](https://img.shields.io/badge/Django_Rest_Framework-3.12.4-red.svg?longCache=true&style=flat-square&logo=django&logoColor=white&colorA=4c566a&colorB=pink)
-
-
-</div>
+---
 
 ## Table of Contents
-* [Description](#description)
-* [Installation](#installation)
-* [Screenshots of the Django Backend Admin Panel](#screenshots)
-* [Useful Links](#useful_links)
 
-
-
-## Description
-
-__Signs for Trucks__ is an online store to buy pre-designed vinyls with custom lines of letters (often call truck letterings). The store also allows clients to upload their own designs and to customize them on the website as well. Aside from the vinyls that are the main product of the store, clients can also purchase simple lettering vinyls with no truck logo, a fire extinguisher vinyl, and/or a vinyl with only the truck unit number (or another number selected by the client).
-
-### Settings
-
-The __settings__ folder inside the trucks_signs_designs folder contains the different setting's configuration for each environment (so far the environments are development, docker testing, and production). Those files are extensions of the base.py file which contains the basic configuration shared among the different environments (for example, the value of the template directory location). In addition, the .env file inside this folder has the environment variables that are mostly sensitive information and should always be configured before use. By default, the environment in use is the decker testing. To change between environments modify the \_\_init.py\_\_ file.
-
-### Models
-
-Most of the models do what can be inferred from their name. The following dots are notes about some of the models to make clearer their propose:
-- __Category Model:__ The category of the vinyls in the store. It contains the title of the category as well as the basic properties shared among products that belong to a same category. For example, _Truck Logo_ is a category for all vinyls that has a logo of a truck plus some lines of letterings (note that the vinyls are instances of the model _Product_). Another category is _Fire Extinguisher_, that is for all vinyls that has a logo of a fire extinguisher. 
-- __Lettering Item Category:__ This is the category of the lettering, for example: _Company Name_, _VIM NUMBER_, ... Each has a different pricing.
-- __Lettering Item Variations:__ This contains a foreign key to the __Lettering Item Category__ and the text added by the client.
-- __Product Variation:__ This model has the original product as a foreign key, plus the lettering lines (instances of the __Lettering Item Variations__ model) added by the client.
-- __Order:__ Contains the cart (in this case the cart is just a vinyl as only one product can be purchased each time). It also contains the contact and shipping information of the client.
-- __Payment:__ It has the payment information such as the time of the purchase and the client id in Stripe.
-
-To manage the payments, the payment gateway in use is [Stripe](https://stripe.com/).
-
-### Brief Explanation of the Views
-
-Most of the views are CBV imported from _rest_framework.generics_, and they allow the backend api to do the basic CRUD operations expected, and so they inherit from the _ListAPIView_, _CreateAPIView_, _RetrieveAPIView_, ..., and so on.
-
-The behavior of some of the views had to be modified to address functionalities such as creation of order and payment, as in this case, for example, both functionalities are implemented in the same view, and so a _GenericAPIView_ was the view from which it inherits. Another example of this is the _UploadCustomerImage_ View that takes the vinyl template uploaded by the clients and creates a new product based on it.
-
-## Installation
-
-1. Clone the repo:
-    ```bash
-    git clone <INSERT URL>
-    ```
-1. Configure a virtual env and set up the database. See [Link for configuring Virtual Environment](https://docs.python-guide.org/dev/virtualenvs/) and [Link for Database setup](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04).
-1. Configure the environment variables.
-    1. Copy the content of the example env file that is inside the truck_signs_designs folder into a .env file:
-        ```bash
-        cd truck_signs_designs/settings
-        cp simple_env_config.env .env
-        ```
-    1. The new .env file should contain all the environment variables necessary to run all the django app in all the environments. However, the only needed variables for the development environment to run are the following:
-        ```bash
-        SECRET_KEY
-        DB_NAME
-        DB_USER
-        DB_PASSWORD
-        DB_HOST
-        DB_PORT
-        STRIPE_PUBLISHABLE_KEY
-        STRIPE_SECRET_KEY
-        EMAIL_HOST_USER
-        EMAIL_HOST_PASSWORD
-        ```
-    1. For the database, the default configurations should be:
-        ```bash
-        DB_NAME=trucksigns_db
-        DB_USER=trucksigns_user
-        DB_PASSWORD=supertrucksignsuser!
-        DB_HOST=localhost
-        DB_PORT=5432
-        ```
-    1. The SECRET_KEY is the django secret key. To generate a new one see: [Stackoverflow Link](https://stackoverflow.com/questions/41298963/is-there-a-function-for-generating-settings-secret-key-in-django)
-
-    1. **NOTE: not required for exercise**<br/>The STRIPE_PUBLISHABLE_KEY and the STRIPE_SECRET_KEY can be obtained from a developer account in [Stripe](https://stripe.com/). 
-        - To retrieve the keys from a Stripe developer account follow the next instructions:
-            1. Log in into your Stripe developer account (stripe.com) or create a new one (stripe.com > Sign Up). This should redirect to the account's Dashboard.
-            1. Go to Developer > API Keys, and copy both the Publishable Key and the Secret Key.
-
-    1. The EMAIL_HOST_USER and the EMAIL_HOST_PASSWORD are the credentials to send emails from the website when a client makes a purchase. This is currently disable, but the code to activate this can be found in views.py in the create order view as comments. Therefore, any valid email and password will work.
-
-1. Run the migrations and then the app:
-    ```bash
-    python manage.py migrate
-    python manage.py runserver
-    ```
-1. Congratulations =) !!! The App should be running in [localhost:8000](http://localhost:8000)
-1. (Optional step) To create a super user run:
-    ```bash
-    python manage.py createsuperuser
-    ```
-
-
-__NOTE:__ To create Truck vinyls with Truck logos in them, first create the __Category__ Truck Sign, and then the __Product__ (can have any name). This is to make sure the frontend retrieves the Truck vinyls for display in the Product Grid as it only fetches the products of the category Truck Sign.
+1. [Prerequisites](#prerequisites)
+2. [Quickstart](#quickstart)
+3. [Usage](#usage)
+   - [Environment Configuration](#environment-configuration)
+   - [Building and Running](#building-and-running)
+   - [Accessing the Application](#accessing-the-application)
+   - [Managing Containers](#managing-containers)
+   - [Working with Logs](#working-with-logs)
+4. [Troubleshooting](#troubleshooting)
 
 ---
 
-<a name="screenshots"></a>
+## Prerequisites
 
-## Screenshots of the Django Backend Admin Panel
+- **Docker**: Version 20.10 or higher
+- **Git**: For repository management
+- **Stripe Account**: For payment integration (test keys for development)
+- **Gmail Account**: With app password for email functionality
 
-### Mobile View
-
-<div align="center">
-
-![alt text](./screenshots/Admin_Panel_View_Mobile.png)  ![alt text](./screenshots/Admin_Panel_View_Mobile_2.png) ![alt text](./screenshots/Admin_Panel_View_Mobile_3.png)
-
-</div>
----
-
-### Desktop View
-
-![alt text](./screenshots/Admin_Panel_View.png)
+Verify Docker installation:
+```bash
+docker --version
+docker images
+docker ps
+```
 
 ---
 
-![alt text](./screenshots/Admin_Panel_View_2.png)
+## Quickstart
+
+### 1. Clone the repository
+```bash
+git clone -b feature/api-containerization git@github.com:YOUR_USERNAME/truck_signs_api.git
+cd truck_signs_api
+```
+
+### 2. Create environment file
+```bash
+# Windows
+copy .env.example .env
+
+# Linux/macOS
+cp .env.example .env
+```
+
+### 3. Configure environment variables
+Edit `.env` and set **required** values:
+
+**Database Configuration:**
+```bash
+POSTGRES_HOST=truck-signs-db
+POSTGRES_PORT=5432
+POSTGRES_DB=truck_signs_db
+POSTGRES_USER=truck_signs_user
+POSTGRES_PASSWORD=your_secure_password_here
+```
+
+**Django Configuration:**
+```bash
+DJANGO_ENV=production
+DOCKER_SECRET_KEY=your_generated_secret_key_here
+DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1,YOUR_SERVER_IP
+```
+
+**Stripe Configuration:**
+```bash
+DOCKER_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
+DOCKER_STRIPE_SECRET_KEY=sk_test_your_secret_key
+```
+
+**Email Configuration:**
+```bash
+DOCKER_EMAIL_HOST_USER=your-email@gmail.com
+DOCKER_EMAIL_HOST_PASSWORD=your_app_password
+```
+
+**Generate Django Secret Key:**
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+
+### 4. Build Docker image
+```bash
+docker build -t truck-signs-api:latest .
+```
+
+### 5. Create Docker network
+```bash
+docker network create truck-signs-network
+```
+
+### 6. Start PostgreSQL database
+```bash
+docker run -d \
+    --name truck-signs-db \
+    --network truck-signs-network \
+    -e POSTGRES_DB=truck_signs_db \
+    -e POSTGRES_USER=truck_signs_user \
+    -e POSTGRES_PASSWORD=secure_password_123 \
+    -v truck-signs-data:/var/lib/postgresql/data \
+    postgres:15-alpine
+```
+
+**Wait for database initialization (5 seconds recommended):**
+```bash
+# Windows
+timeout /t 5 /nobreak
+
+# Linux/macOS
+sleep 5
+```
+
+### 7. Start Django API
+```bash
+docker run -d \
+    --name truck-signs-api \
+    --network truck-signs-network \
+    -p 8000:8000 \
+    --env-file .env \
+    truck-signs-api:latest
+```
+
+### 8. Verify deployment
+```bash
+docker ps --filter "name=truck-signs"
+```
+
+Expected output:
+```
+CONTAINER ID   IMAGE                    STATUS         PORTS                    NAMES
+abc123def456   truck-signs-api:latest   Up 10 seconds  0.0.0.0:8000->8000/tcp  truck-signs-api
+def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                 truck-signs-db
+```
+
+### 9. Access application
+- **API**: `http://localhost:8000`
+- **Admin Panel**: `http://localhost:8000/admin`
+- **API Documentation**: `http://localhost:8000/api/`
 
 ---
 
-![alt text](./screenshots/Admin_Panel_View_3.png)
+## Usage
 
+### Environment Configuration
 
+The `.env` file contains all configuration for the deployment. This file is **not** stored in Git for security reasons.
 
-<a name="useful_links"></a>
-## Useful Links
+**Create from template:**
+```bash
+# Windows
+copy .env.example .env
+notepad .env
 
-### Postgresql Database
-- Setup Database: [Digital Ocean Link for Django Deployment on VPS](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04)
+# Linux/macOS
+cp .env.example .env
+nano .env
+```
 
-### Docker
-- [Docker Oficial Documentation](https://docs.docker.com/)
-- Dockerizing Django, PostgreSQL, guinicorn, and Nginx:
-    - Github repo of sunilale0: [Link](https://github.com/sunilale0/django-postgresql-gunicorn-nginx-dockerized/blob/master/README.md#nginx)
-    - Michael Herman article on testdriven.io: [Link](https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/)
+**Critical settings to modify:**
 
-### Django and DRF
-- [Django Official Documentation](https://docs.djangoproject.com/en/4.0/)
-- Generate a new secret key: [Stackoverflow Link](https://stackoverflow.com/questions/41298963/is-there-a-function-for-generating-settings-secret-key-in-django)
-- Modify the Django Admin:
-    - Small modifications (add searching, columns, ...): [Link](https://realpython.com/customize-django-admin-python/)
-    - Modify Templates and css: [Link from Medium](https://medium.com/@brianmayrose/django-step-9-180d04a4152c)
-- [Django Rest Framework Official Documentation](https://www.django-rest-framework.org/)
-- More about Nested Serializers: [Stackoverflow Link](https://stackoverflow.com/questions/51182823/django-rest-framework-nested-serializers)
-- More about GenericViews: [Testdriver.io Link](https://testdriven.io/blog/drf-views-part-2/)
+#### 1. Database Configuration (REQUIRED)
+```bash
+POSTGRES_HOST=truck-signs-db          # Container name
+POSTGRES_PORT=5432                     # Default PostgreSQL port
+POSTGRES_DB=truck_signs_db            # Database name
+POSTGRES_USER=truck_signs_user        # Database user
+POSTGRES_PASSWORD=use_strong_password # CHANGE THIS!
+```
 
-### Miscellaneous
-- Create Virual Environment with Virtualenv and Virtualenvwrapper: [Link](https://docs.python-guide.org/dev/virtualenvs/)
-- [Configure CORS](https://www.stackhawk.com/blog/django-cors-guide/)
-- [Setup Django with Cloudinary](https://cloudinary.com/documentation/django_integration)
+> [!WARNING]
+> Never use default passwords in production!
 
+#### 2. Django Secret Key (REQUIRED)
+Generate using Python:
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+Then set in `.env`:
+```bash
+DOCKER_SECRET_KEY=your_generated_secret_key_here
+```
+
+#### 3. Django Settings (REQUIRED for production)
+```bash
+DJANGO_ENV=production                           # or 'development'
+DEBUG=False                                     # NEVER True in production!
+ALLOWED_HOSTS=localhost,127.0.0.1,YOUR_SERVER_IP
+```
+
+#### 4. Stripe Integration (REQUIRED)
+Get your keys from [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys):
+```bash
+DOCKER_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxx
+DOCKER_STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+```
+
+> [!TIP]
+> Use test keys (`pk_test_` and `sk_test_`) for development
+
+#### 5. Email Configuration (REQUIRED)
+For Gmail, create an [App Password](https://myaccount.google.com/apppasswords):
+```bash
+DOCKER_EMAIL_HOST_USER=your-email@gmail.com
+DOCKER_EMAIL_HOST_PASSWORD=your_16_char_app_password
+```
+
+**Optional settings:**
+- `DOCKER_DB_HOST`: Alternative database host (overrides POSTGRES_HOST)
+- `DOCKER_DB_PORT`: Alternative database port (overrides POSTGRES_PORT)
+- `DOCKER_DB_NAME`: Alternative database name (overrides POSTGRES_DB)
+- `DOCKER_DB_USER`: Alternative database user (overrides POSTGRES_USER)
+- `DOCKER_DB_PASSWORD`: Alternative database password (overrides POSTGRES_PASSWORD)
+
+### Building and Running
+
+#### Complete Deployment Process
+
+**1. Stop and remove old containers (if they exist):**
+```bash
+docker stop truck-signs-api truck-signs-db
+docker rm truck-signs-api truck-signs-db
+```
+
+**2. Build the Docker image:**
+```bash
+docker build -t truck-signs-api:latest .
+```
+
+**3. Create network (if not exists):**
+```bash
+docker network create truck-signs-network
+```
+
+**4. Start PostgreSQL:**
+```bash
+docker run -d \
+    --name truck-signs-db \
+    --network truck-signs-network \
+    -e POSTGRES_DB=truck_signs_db \
+    -e POSTGRES_USER=truck_signs_user \
+    -e POSTGRES_PASSWORD=secure_password_123 \
+    -v truck-signs-data:/var/lib/postgresql/data \
+    postgres:15-alpine
+```
+
+**5. Wait for database (5 seconds):**
+```bash
+# Windows
+timeout /t 5 /nobreak
+
+# Linux/macOS
+sleep 5
+```
+
+**6. Start Django API:**
+```bash
+docker run -d \
+    --name truck-signs-api \
+    --network truck-signs-network \
+    -p 8000:8000 \
+    --env-file .env \
+    truck-signs-api:latest
+```
+
+**7. Verify containers are running:**
+```bash
+docker ps --filter "name=truck-signs"
+```
+
+#### Rebuild After Code Changes
+
+```bash
+# Stop containers
+docker stop truck-signs-api
+docker rm truck-signs-api
+
+# Rebuild image
+docker build -t truck-signs-api:latest .
+
+# Restart API container
+docker run -d \
+    --name truck-signs-api \
+    --network truck-signs-network \
+    -p 8000:8000 \
+    --env-file .env \
+    truck-signs-api:latest
+```
+
+### Accessing the Application
+
+Once containers are running, access the application at:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| API Root | `http://localhost:8000` | Main API endpoint |
+| Admin Panel | `http://localhost:8000/admin` | Django administration |
+| API Docs | `http://localhost:8000/api/` | API documentation |
+| Swagger UI | `http://localhost:8000/swagger/` | Interactive API docs (if enabled) |
+
+**Create superuser for admin access:**
+```bash
+docker exec -it truck-signs-api python manage.py createsuperuser
+```
+
+Follow the prompts to create username, email, and password.
+
+**Run Django management commands:**
+```bash
+# Make migrations
+docker exec -it truck-signs-api python manage.py makemigrations
+
+# Apply migrations
+docker exec -it truck-signs-api python manage.py migrate
+
+# Collect static files
+docker exec -it truck-signs-api python manage.py collectstatic --noinput
+
+# Create superuser
+docker exec -it truck-signs-api python manage.py createsuperuser
+
+# Open Django shell
+docker exec -it truck-signs-api python manage.py shell
+```
+
+### Managing Containers
+
+**View running containers:**
+```bash
+docker ps --filter "name=truck-signs"
+```
+
+**Stop containers:**
+```bash
+docker stop truck-signs-api truck-signs-db
+```
+
+**Start stopped containers:**
+```bash
+docker start truck-signs-db
+docker start truck-signs-api
+```
+
+**Restart containers:**
+```bash
+docker restart truck-signs-api
+docker restart truck-signs-db
+```
+
+**Remove containers (keeps data volumes):**
+```bash
+docker stop truck-signs-api truck-signs-db
+docker rm truck-signs-api truck-signs-db
+```
+
+**Remove everything including data:**
+> [!WARNING]
+> This deletes all database data permanently!
+
+```bash
+# Stop and remove containers
+docker stop truck-signs-api truck-signs-db
+docker rm truck-signs-api truck-signs-db
+
+# Remove network
+docker network rm truck-signs-network
+
+# Remove volume (DATABASE DATA WILL BE LOST!)
+docker volume rm truck-signs-data
+
+# Remove image
+docker rmi truck-signs-api:latest
+```
+
+**View Docker resources:**
+```bash
+# Images
+docker images | findstr truck-signs
+
+# Volumes
+docker volume ls | findstr truck-signs
+
+# Networks
+docker network ls | findstr truck-signs
+```
+
+### Working with Logs
+
+**View API logs:**
+```bash
+docker logs truck-signs-api
+```
+
+**Follow API logs in real-time:**
+```bash
+docker logs -f truck-signs-api
+```
+
+**View last N lines:**
+```bash
+docker logs --tail 50 truck-signs-api
+```
+
+**View database logs:**
+```bash
+docker logs truck-signs-db
+docker logs -f truck-signs-db
+```
+
+**Save logs to file:**
+```bash
+# Windows
+docker logs truck-signs-api > api-logs.txt
+docker logs truck-signs-db > db-logs.txt
+
+# Linux/macOS
+docker logs truck-signs-api > api-logs.txt
+docker logs truck-signs-db > db-logs.txt
+```
+
+**View logs with timestamps:**
+```bash
+docker logs --timestamps truck-signs-api
+```
+
+**Filter logs by time:**
+```bash
+# Last 10 minutes
+docker logs --since 10m truck-signs-api
+
+# Since specific time
+docker logs --since 2024-01-01T10:00:00 truck-signs-api
+```
+
+---
+
+## Troubleshooting
+
+### Container won't start
+
+**Check if image exists:**
+```bash
+docker images | findstr truck-signs-api
+```
+
+**Check container status:**
+```bash
+docker ps -a --filter "name=truck-signs"
+```
+
+**View startup logs:**
+```bash
+docker logs truck-signs-api
+```
+
+### Database connection errors
+
+**Verify database is running:**
+```bash
+docker ps --filter "name=truck-signs-db"
+```
+
+**Check database logs:**
+```bash
+docker logs truck-signs-db
+```
+
+**Verify network connectivity:**
+```bash
+docker network inspect truck-signs-network
+```
+
+**Test database connection from API container:**
+```bash
+docker exec -it truck-signs-api psql -h truck-signs-db -U truck_signs_user -d truck_signs_db
+```
+
+### Port already in use
+
+**Check what's using port 8000:**
+```bash
+# Windows
+netstat -ano | findstr :8000
+
+# Linux/macOS
+lsof -i :8000
+```
+
+**Use different port:**
+```bash
+docker run -d \
+    --name truck-signs-api \
+    --network truck-signs-network \
+    -p 8080:8000 \
+    --env-file .env \
+    truck-signs-api:latest
+```
+
+### Static files not loading
+
+**Collect static files manually:**
+```bash
+docker exec -it truck-signs-api python manage.py collectstatic --noinput
+```
+
+**Verify WhiteNoise is configured:**
+```bash
+docker exec -it truck-signs-api python manage.py check --deploy
+```
+
+### Email not sending
+
+**Verify Gmail app password:**
+1. Go to Google Account → Security → 2-Step Verification → App passwords
+2. Generate new app password
+3. Update `.env` with new password
+4. Restart container
+
+**Test email in Django shell:**
+```bash
+docker exec -it truck-signs-api python manage.py shell
+```
+```python
+from django.core.mail import send_mail
+send_mail(
+    'Test Subject',
+    'Test message.',
+    'your-email@gmail.com',
+    ['recipient@example.com'],
+    fail_silently=False,
+)
+```
+
+### Stripe payments failing
+
+**Verify API keys:**
+- Check keys in Stripe Dashboard
+- Ensure test mode keys start with `pk_test_` and `sk_test_`
+- Verify keys are correctly set in `.env`
+
+**Test Stripe connection in shell:**
+```bash
+docker exec -it truck-signs-api python manage.py shell
+```
+```python
+import stripe
+from django.conf import settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.Customer.list(limit=1)
+```
+
+### Complete cleanup and fresh start
+
+```bash
+# Stop all containers
+docker stop truck-signs-api truck-signs-db
+
+# Remove containers
+docker rm truck-signs-api truck-signs-db
+
+# Remove network
+docker network rm truck-signs-network
+
+# Remove volume (WARNING: deletes data!)
+docker volume rm truck-signs-data
+
+# Remove image
+docker rmi truck-signs-api:latest
+
+# Start fresh deployment from step 4 in Quickstart
+```
+
+---
+
+## Project Information
+
+- **Technology Stack**: Django 2.2.8, PostgreSQL 15, Gunicorn, WhiteNoise
+- **Container Runtime**: Docker 20.10+
+- **Database**: PostgreSQL 15 Alpine
+- **WSGI Server**: Gunicorn
+- **Payment Integration**: Stripe API
+- **Email Provider**: Gmail SMTP
+- **Last Updated**: January 2026
+- **Branch**: feature/api-containerization
+- **Course**: DevSecOps
