@@ -15,7 +15,6 @@ This repository contains the **containerized deployment** for the Truck Signs AP
    - [Container won't start](#container-won't-start)
    - [Database connection errors](#database-connection-errors)
    - [Port already in use](#port-already-in-use)
-   - [Static files not loading](#static-files-not-loading)
    - [Complete cleanup and fresh start](#complete-cleanup-and-fresh-start)
 
 ---
@@ -344,18 +343,6 @@ docker run -d \
     -p 8080:8000 \
     --env-file .env \
     truck-signs-api:latest
-```
-
-### Static files not loading
-
-**Collect static files manually:**
-```bash
-docker exec -it truck-signs-api python manage.py collectstatic --noinput
-```
-
-**Verify WhiteNoise is configured:**
-```bash
-docker exec -it truck-signs-api python manage.py check --deploy
 ```
 
 ### Complete cleanup and fresh start
