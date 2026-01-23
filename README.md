@@ -68,7 +68,7 @@ POSTGRES_PASSWORD=your_secure_password_here
 DJANGO_ENV=production
 DOCKER_SECRET_KEY=your_generated_secret_key_here
 DEBUG=False
-ALLOWED_HOSTS=localhost,127.0.0.1,YOUR_SERVER_IP
+ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP>
 ```
 
 **Stripe Configuration:**
@@ -142,9 +142,8 @@ def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                t
 ```
 
 ### 9. Access application
-- **API**: `http://localhost:8020`
-- **Admin Panel**: `http://localhost:8020/admin`
-- **API Documentation**: `http://localhost:8020/api/`
+- **API**: `http://<YOUR_SERVER_IP>:8020`
+- **Admin Panel**: `http://<YOUR_SERVER_IP>:8020/admin`
 
 ---
 
@@ -193,7 +192,7 @@ DOCKER_SECRET_KEY=your_generated_secret_key_here
 ```bash
 DJANGO_ENV=production                              # or 'development'
 DEBUG=False                                        # NEVER True in production!
-ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP>
+ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP> # Add the ip address of your server here
 ```
 
 #### 4. Stripe Integration (REQUIRED)
@@ -220,116 +219,6 @@ DOCKER_EMAIL_HOST_PASSWORD=your_16_char_app_password
 - `DOCKER_DB_USER`: Alternative database user (overrides POSTGRES_USER)
 - `DOCKER_DB_PASSWORD`: Alternative database password (overrides POSTGRES_PASSWORD)
 
-### Building and Running
-
-#### Complete Deployment Process
-
-**1. Stop and remove old containers (if they exist):**
-```bash
-docker stop truck-signs-api truck-signs-db
-docker rm truck-signs-api truck-signs-db
-```
-
-**2. Build the Docker image:**
-```bash
-docker build -t truck-signs-api:latest .
-```
-
-**3. Create network (if not exists):**
-```bash
-docker network create truck-signs-network
-```
-
-**4. Start PostgreSQL:**
-```bash
-docker run -d \
-    --name truck-signs-db \
-    --network truck-signs-network \
-    -e POSTGRES_DB=truck_signs_db \
-    -e POSTGRES_USER=truck_signs_user \
-    -e POSTGRES_PASSWORD=secure_password_123 \
-    -v truck-signs-data:/var/lib/postgresql/data \
-    postgres:15-alpine
-```
-
-**5. Wait for database (5 seconds):**
-```bash
-# Windows
-timeout /t 5 /nobreak
-
-# Linux/macOS
-sleep 5
-```
-
-**6. Start Django API:**
-```bash
-docker run -d \
-    --name truck-signs-api \
-    --network truck-signs-network \
-    -p 8020:8000 \
-    --env-file .env \
-    truck-signs-api:latest
-```
-
-**7. Verify containers are running:**
-```bash
-docker ps --filter "name=truck-signs"
-```
-
-#### Rebuild After Code Changes
-
-```bash
-# Stop containers
-docker stop truck-signs-api
-docker rm truck-signs-api
-
-# Rebuild image
-docker build -t truck-signs-api:latest .
-
-# Restart API container
-docker run -d \
-    --name truck-signs-api \
-    --network truck-signs-network \
-    -p 8020:8000 \
-    --env-file .env \
-    truck-signs-api:latest
-```
-
-### Accessing the Application
-
-Once containers are running, access the application at:
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| API Root | `http://localhost:8020` | Main API endpoint |
-| Admin Panel | `http://localhost:8020/admin` | Django administration |
-| API Docs | `http://localhost:8020/api/` | API documentation |
-| Swagger UI | `http://localhost:8020/swagger/` | Interactive API docs (if enabled) |
-
-**Create superuser for admin access:**
-```bash
-docker exec -it truck-signs-api python manage.py createsuperuser
-```
-
-Follow the prompts to create username, email, and password.
-
-**Run Django management commands:**
-```bash
-# Make migrations
-docker exec -it truck-signs-api python manage.py makemigrations
-
-# Apply migrations
-docker exec -it truck-signs-api python manage.py migrate
-
-# Collect static files
-docker exec -it truck-signs-api python manage.py collectstatic --noinput
-
-# Create superuser
-docker exec -it truck-signs-api python manage.py createsuperuser
-
-# Open Django shell
-docker exec -it truck-signs-api python manage.py shell
-```
 
 ### Managing Containers
 
@@ -380,34 +269,6 @@ docker volume rm truck-signs-data
 docker rmi truck-signs-api:latest
 ```
 
-**View Docker resources:**
-```bash
-# Images
-docker images | findstr truck-signs
-
-# Volumes
-docker volume ls | findstr truck-signs
-
-# Networks
-docker network ls | findstr truck-signs
-```
-
-### Working with Logs
-
-**View API logs:**
-```bash
-docker logs truck-signs-api
-```
-
-**Follow API logs in real-time:**
-```bash
-docker logs -f truck-signs-api
-```
-
-**View last N lines:**
-```bash
-docker logs --tail 50 truck-signs-api
-```
 
 **View database logs:**
 ```bash
@@ -417,30 +278,9 @@ docker logs -f truck-signs-db
 
 **Save logs to file:**
 ```bash
-# Windows
-docker logs truck-signs-api > api-logs.txt
-docker logs truck-signs-db > db-logs.txt
-
-# Linux/macOS
 docker logs truck-signs-api > api-logs.txt
 docker logs truck-signs-db > db-logs.txt
 ```
-
-**View logs with timestamps:**
-```bash
-docker logs --timestamps truck-signs-api
-```
-
-**Filter logs by time:**
-```bash
-# Last 10 minutes
-docker logs --since 10m truck-signs-api
-
-# Since specific time
-docker logs --since 2024-01-01T10:00:00 truck-signs-api
-```
-
----
 
 ## Troubleshooting
 
@@ -514,47 +354,6 @@ docker exec -it truck-signs-api python manage.py collectstatic --noinput
 **Verify WhiteNoise is configured:**
 ```bash
 docker exec -it truck-signs-api python manage.py check --deploy
-```
-
-### Email not sending
-
-**Verify Gmail app password:**
-1. Go to Google Account → Security → 2-Step Verification → App passwords
-2. Generate new app password
-3. Update `.env` with new password
-4. Restart container
-
-**Test email in Django shell:**
-```bash
-docker exec -it truck-signs-api python manage.py shell
-```
-```python
-from django.core.mail import send_mail
-send_mail(
-    'Test Subject',
-    'Test message.',
-    'your-email@gmail.com',
-    ['recipient@example.com'],
-    fail_silently=False,
-)
-```
-
-### Stripe payments failing
-
-**Verify API keys:**
-- Check keys in Stripe Dashboard
-- Ensure test mode keys start with `pk_test_` and `sk_test_`
-- Verify keys are correctly set in `.env`
-
-**Test Stripe connection in shell:**
-```bash
-docker exec -it truck-signs-api python manage.py shell
-```
-```python
-import stripe
-from django.conf import settings
-stripe.api_key = settings.STRIPE_SECRET_KEY
-stripe.Customer.list(limit=1)
 ```
 
 ### Complete cleanup and fresh start
