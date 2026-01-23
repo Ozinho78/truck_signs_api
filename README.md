@@ -10,11 +10,13 @@ This repository contains the **containerized deployment** for the Truck Signs AP
 2. [Quickstart](#quickstart)
 3. [Usage](#usage)
    - [Environment Configuration](#environment-configuration)
-   - [Building and Running](#building-and-running)
-   - [Accessing the Application](#accessing-the-application)
    - [Managing Containers](#managing-containers)
-   - [Working with Logs](#working-with-logs)
 4. [Troubleshooting](#troubleshooting)
+   - [Container won't start](#container-won't-start)
+   - [Database connection errors](#database-connection-errors)
+   - [Port already in use](#port-already-in-use)
+   - [Static files not loading](#static-files-not-loading)
+   - [Complete cleanup and fresh start](#complete-cleanup-and-fresh-start)
 
 ---
 
