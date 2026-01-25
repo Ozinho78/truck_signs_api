@@ -9,6 +9,7 @@ This repository contains the **containerized deployment** for the Truck Signs AP
 1. [Prerequisites](#prerequisites)
 2. [Quickstart](#quickstart)
 3. [Usage](#usage)
+   - [Project Structure](#project-structure)
    - [Environment Configuration](#environment-configuration)
    - [Managing Containers](#managing-containers)
 4. [Troubleshooting](#troubleshooting)
@@ -149,6 +150,20 @@ def456ghi789   postgres:15-alpine       Up 15 seconds  5432/tcp                t
 ---
 
 ## Usage
+
+### Project Structure
+
+```bash
+truck-signs-api/
+├── .gitignore                  # Excludes .env, logs, IDE configs, OS files
+├── Dockerfile                  # Container build instructions
+├── checklist.md                # DevSecOps checklist that has to be fulfilled for the project
+├── entrypoint.sh               # Container startup script, DB migrations and Gunicorn launch
+├── .env.template               # Template for .env, contains environment variables
+├── .env                        # Runtime environment variables (NOT in Git!), created by YOU
+├── README.md                   # This document, project documentation with ToC, quickstart, usage
+├── requirements.txt            # Python dependencies that have to be installed for running the project
+```
 
 ### Environment Configuration
 
