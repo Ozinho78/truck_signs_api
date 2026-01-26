@@ -69,20 +69,9 @@ docker network create truck-signs-network
 docker run -d \
     --name truck-signs-db \
     --network truck-signs-network \
-    -e POSTGRES_DB=truck_signs_db \
-    -e POSTGRES_USER=truck_signs_user \
-    -e POSTGRES_PASSWORD=secure_password_123 \
+    --env-file .env \
     -v truck-signs-data:/var/lib/postgresql/data \
     postgres:15-alpine
-```
-
-**Wait for database initialization (5 seconds recommended):**
-```bash
-# Windows
-timeout /t 5 /nobreak
-
-# Linux/macOS
-sleep 5
 ```
 
 ### 6. Start Django API
@@ -95,7 +84,7 @@ docker run -d \
     truck-signs-api:latest
 ```
 
-### 7. Verify deployment
+### 7. Verify container status
 ```bash
 docker ps --filter "name=truck-signs"
 ```
