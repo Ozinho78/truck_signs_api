@@ -79,8 +79,8 @@ docker run -d \
 docker run -d \
     --name truck-signs-api \
     --network truck-signs-network \
-    -p 8020:8000 \
     --env-file .env \
+    -p 8020:8000 \
     truck-signs-api:latest
 ```
 
