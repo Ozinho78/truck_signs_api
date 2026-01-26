@@ -156,3 +156,14 @@ Thumbs.db
 
 # profiling data
 .prof
+
+# custom directories
+infos/
+test/
+
+# custom files
+clean.bat
+deploy-simple.bat
+.env
+generate_password.ps1
+up.bat
