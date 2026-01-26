@@ -54,54 +54,17 @@ copy env.template .env
 cp env.template .env
 ```
 
-### 3. Configure environment variables
-Edit `.env` and set **required** values:
-
-**Database Configuration:**
-```bash
-POSTGRES_HOST=truck-signs-db
-POSTGRES_PORT=5432
-POSTGRES_DB=truck_signs_db
-POSTGRES_USER=truck_signs_user
-POSTGRES_PASSWORD=your_secure_password_here
-```
-
-**Django Configuration:**
-```bash
-DJANGO_ENV=production
-DOCKER_SECRET_KEY=your_generated_secret_key_here
-DEBUG=False
-ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP>
-```
-
-**Stripe Configuration:**
-```bash
-DOCKER_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
-DOCKER_STRIPE_SECRET_KEY=sk_test_your_secret_key
-```
-
-**Email Configuration:**
-```bash
-DOCKER_EMAIL_HOST_USER=your-email@gmail.com
-DOCKER_EMAIL_HOST_PASSWORD=your_app_password
-```
-
-**Generate Django Secret Key:**
-```bash
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
-
-### 4. Build Docker image
+### 3. Build Docker image
 ```bash
 docker build -t truck-signs-api:latest .
 ```
 
-### 5. Create Docker network
+### 4. Create Docker network
 ```bash
 docker network create truck-signs-network
 ```
 
-### 6. Start PostgreSQL database
+### 5. Start PostgreSQL database
 ```bash
 docker run -d \
     --name truck-signs-db \
@@ -122,7 +85,7 @@ timeout /t 5 /nobreak
 sleep 5
 ```
 
-### 7. Start Django API
+### 6. Start Django API
 ```bash
 docker run -d \
     --name truck-signs-api \
@@ -132,7 +95,7 @@ docker run -d \
     truck-signs-api:latest
 ```
 
-### 8. Verify deployment
+### 7. Verify deployment
 ```bash
 docker ps --filter "name=truck-signs"
 ```
