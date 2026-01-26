@@ -162,12 +162,8 @@ infos/
 test/
 
 # custom files
-generate_password.ps1
-start-complete.bat
-start-with-env-file.bat
 clean.bat
-deploy.bat
 deploy-simple.bat
-VM_DEPLOYMENT.md
+.env
+generate_password.ps1
 up.bat
-

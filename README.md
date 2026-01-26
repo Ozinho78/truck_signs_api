@@ -84,7 +84,7 @@ docker run -d \
     truck-signs-api:latest
 ```
 
-### 7. Verify container status
+### 7. Verify containers status
 ```bash
 docker ps --filter "name=truck-signs"
 ```
@@ -147,11 +147,12 @@ POSTGRES_PASSWORD=use_strong_password   # CHANGE THIS!
 > [!WARNING]
 > Never use default passwords in production!
 
-#### 2. Django Secret Key (REQUIRED)
-Generate using Python:
+#### 2. Django Secret Key
+Generate using Python (Python and Django required):
 ```bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
+
 Then set in `.env`:
 ```bash
 DOCKER_SECRET_KEY=your_generated_secret_key_here
@@ -159,9 +160,9 @@ DOCKER_SECRET_KEY=your_generated_secret_key_here
 
 #### 3. Django Settings (REQUIRED for production)
 ```bash
-DJANGO_ENV=production                              # or 'development'
-DEBUG=False                                        # NEVER True in production!
-ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP> # Add the ip address of your server here
+DJANGO_ENV=production                               # or 'development'
+DEBUG=False                                         # NEVER True in production!
+ALLOWED_HOSTS=localhost,127.0.0.1,<YOUR_SERVER_IP>  # Add the ip address of your server here
 ```
 
 #### 4. Stripe Integration (REQUIRED)
@@ -180,14 +181,6 @@ For Gmail, create an [App Password](https://myaccount.google.com/apppasswords):
 DOCKER_EMAIL_HOST_USER=<your-email>@gmail.com
 DOCKER_EMAIL_HOST_PASSWORD=your_16_char_app_password
 ```
-
-**Optional settings:**
-- `DOCKER_DB_HOST`: Alternative database host (overrides POSTGRES_HOST)
-- `DOCKER_DB_PORT`: Alternative database port (overrides POSTGRES_PORT)
-- `DOCKER_DB_NAME`: Alternative database name (overrides POSTGRES_DB)
-- `DOCKER_DB_USER`: Alternative database user (overrides POSTGRES_USER)
-- `DOCKER_DB_PASSWORD`: Alternative database password (overrides POSTGRES_PASSWORD)
-
 
 ### Managing Containers
 
