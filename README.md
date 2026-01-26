@@ -23,6 +23,7 @@ This repository contains the **containerized deployment** for the Truck Signs AP
 ## Prerequisites
 
 - **Docker**: Version 20.10 or higher
+- **Python**: Version 3.10 or higher
 - **Git**: For repository management
 - **Stripe Account**: For payment integration (test keys for development)
 - **Gmail Account**: With app password for email functionality
